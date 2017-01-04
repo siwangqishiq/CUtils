@@ -42,4 +42,6 @@ Type linkedlist_get_element(Linkedlist *list,int index);
 
 List_Node *linkedlist_create_list_node(Type data);
 
+int linkedlist_remove_node(Linkedlist *list,List_Node *p);
+
 #endif

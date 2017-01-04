@@ -19,7 +19,9 @@ void linkedlist_free(Linkedlist *list){
         while(p){
             List_Node *t_prior = p;
             p = p->next;
-            free(t_prior);
+            if(t_prior)
+                free(t_prior);
+            t_prior = NULL;
         }//end while
         
         free(list);
@@ -83,15 +85,55 @@ int linkedlist_add_at_index(Linkedlist *list,int index,Type add_data){
     return OK;
 }
 
+int linkedlist_remove_node(Linkedlist *list,List_Node *p){
+    if(!p)
+        return ERROR;
+    
+    if(p->prior){//有前缀
+        List_Node *prior_node = p->prior;
+        List_Node *next_node = p->next;
+        prior_node->next = next_node;
+        if(next_node){
+            next_node->prior = prior_node;
+        }
+    }else{//无前缀
+        list->head = p->next;
+        if(list->head)
+            list->head->prior = NULL;
+    }
+    
+    free(p);
+    list->size--;
+    
+    return OK;
+}
+
 int linkedlist_remove_at_index(Linkedlist *list,int index){
     if(!list || index < 0 || index >= list->size)
         return ERROR;
     
-    return ERROR;
+    List_Node *p = list->head;
+    int count = 0;
+    while(p && count < index){
+        p = p->next;
+        count++;
+    }//end while
+    
+    return linkedlist_remove_node(list, p);
 }
 
 int linkedlist_remove_element(Linkedlist *list,Type remove_item){
-    return ERROR;
+    if(!list || !remove_item)
+        return ERROR;
+    
+    List_Node *p = list->head;
+    while(p){
+        if(p->data == remove_item)
+            break;
+        p = p->next;
+    }//end while
+    
+    return linkedlist_remove_node(list, p);
 }
 
 Type linkedlist_get_element(Linkedlist *list,int index){
